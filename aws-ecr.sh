@@ -21,7 +21,7 @@ token=
 
 FILE=.env
 if test -f "$FILE"; then
-  source .env
+	source .env
 	export $(cut -d= -f1 .env)
 fi
 
@@ -32,23 +32,23 @@ command=
 tag=
 
 # If you need to ssh key according to fetch private repository codebase with ssh key, you can this variable.
-# Own build `dockerBuild` function pass this value with SSH_KEY argument. 
+# Own build `dockerBuild` function pass this value with SSH_KEY argument.
 # You should get this build args in Dockerfile using ARG SSH_KEY top of file and call with $SSH_KEY wherever you want it.
 ssh_key="${SSH_KEY:-''}"
 
 # For nodeJS applications.
 tag=$(awk -F'"' '/"version": ".+"/{ print $4; exit; }' package.json)
 
-kill () {
+kill() {
 	echo >&2 "$@"
 	exit 1
 }
 
-awsLogin(){
+awsLogin() {
 	tokenbase64=$(aws ecr get-authorization-token --profile ecr-user --output text --query 'authorizationData[].authorizationToken')
 
 	if [ -n $tokenbase64 ]; then
-		credentials=`echo $tokenbase64 | base64 --decode`
+		credentials=$(echo $tokenbase64 | base64 --decode)
 
 		tokens=(${credentials//:/ })
 		user=${tokens[0]}
@@ -57,37 +57,37 @@ awsLogin(){
 		echo "${bold}>>> Logging in Aws${normal}"
 
 		docker login -u ${user} --password ${token} $uri
-	fi;
+	fi
 }
 
-getEcrTags(){
+getEcrTags() {
 	curl -H "Authorization: Basic $token" $uri
 	echo '\n'
 }
 
-pushToEcr(){
+pushToEcr() {
 	docker push $repository:$tag
 }
 
-dockerBuild(){
+dockerBuild() {
 	docker build --no-cache --build-arg SSH_KEY=$base64 -t $name .
 }
 
-dockerTag(){
+dockerTag() {
 	echo "create tag: $tag"
 	docker tag $name $repository:$tag
 }
 
-dockerTagLatest(){
+dockerTagLatest() {
 	echo "create tag: latest"
 	docker tag $name $repository:latest
 }
 
-# assign base64 private key 
+# assign base64 private key
 base64=$(cat $ssh_key | base64)
 
-usage(){
-cat << EOF
+usage() {
+	cat <<EOF
 usage: bash ./scripts/packndeploy -n service_name
 -t    | --tag       (Required)            Image tag / version
 -r 		| --repo			(Required)						Repository
@@ -99,40 +99,42 @@ EOF
 
 while [ "$1" != "" ]; do
 	case $1 in
-		-t | --tag )
-			shift
-			tag=$1
+	-t | --tag)
+		shift
+		tag=$1
 		;;
-		-r | --repo )
-			shift
-			repository=$1
+	-r | --repo)
+		shift
+		repository=$1
 		;;
-		-n | --name)
-			shift
-			name=$1
+	-n | --name)
+		shift
+		name=$1
 		;;
-		-u | --uri)
-			shift
-			uri=$1
+	-u | --uri)
+		shift
+		uri=$1
 		;;
-		-h | --help ) 
-			usage
-			exit
+	-h | --help)
+		usage
+		exit
 		;;
-		build)
-			command="build"
+	build)
+		command="build"
 		;;
-		release)
-			command="release"
+	release)
+		command="release"
 		;;
-		* ) usage
-				exit 1
+	*)
+		usage
+		exit 1
+		;;
 	esac
 	shift
 done
 
 echo "TAG = " $tag
-echo "REPOSITORY = " $repository 
+echo "REPOSITORY = " $repository
 echo "URI = " $uri
 echo "NAME = " $name
 echo "KEY = " $ssh_key
