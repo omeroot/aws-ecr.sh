@@ -172,3 +172,7 @@ if [ "$command" = "release" ]; then
 	awsLogin
 	pushToEcr
 fi
+
+if [ "$command" = "auth" ]; then
+	awsLogin
+fi
