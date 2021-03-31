@@ -162,6 +162,11 @@ echo "NAME = " $name
 echo "KEY = " $ssh_key
 echo "COMMAND = " $command
 
+if [ -z $uri ]; then
+	echo "Uri is required, provide it with the flag: -u <aws ecr url>"
+	exit
+fi
+
 if [ "$command" = "auth" ]; then
 	awsLogin
 	exit
@@ -169,11 +174,6 @@ fi
 
 if [ -z $repository ]; then
 	echo "Repo is required, provide it with the flag: -r <aws repository url>"
-	exit
-fi
-
-if [ -z $uri ]; then
-	echo "Uri is required, provide it with the flag: -u <aws ecr url>"
 	exit
 fi
 
