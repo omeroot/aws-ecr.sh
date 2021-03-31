@@ -44,6 +44,7 @@ SSH_KEY=~/.ssh/<your_key_rsa>
 |---------	|---------------------------------------------	|
 | release 	| Push image to aws ecr                       	|
 | build   	| Build image with tag version and tag latest 	|
+| auth    	| Login to Aws Ecr with authenticated profile  	|
 
 
 > If you dont pass no command script only build your image according to given options.
