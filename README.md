@@ -7,6 +7,16 @@ You can;
 1. You build image without push to aws for your local development 
 2. You build and push to aws and you can see image in the ecr service.
 
+## Requirements
+
+1. Your aws iam user must be configured with aws cli with named profiles
+
+```text
+aws configure --profile aws-ecr
+```
+
+_You find out more details https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html_
+
 ## Running
 
 On the fly (I recommend) running.

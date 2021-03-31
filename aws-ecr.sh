@@ -19,8 +19,8 @@ token=
 # APP_NAME=<app name>
 # KEY=~/.ssh/<example_rsa>
 
-FILE=.env
-if test -f "$FILE"; then
+ENV=.env
+if test -f "$ENV"; then
 	source .env
 	export $(cut -d= -f1 .env)
 fi
@@ -37,7 +37,10 @@ tag=
 ssh_key="${SSH_KEY:-''}"
 
 # For nodeJS applications.
-tag=$(awk -F'"' '/"version": ".+"/{ print $4; exit; }' package.json)
+PACKAGE_JSON=package.json
+if test -f "$PACKAGE_JSON"; then
+	tag=$(awk -F'"' '/"version": ".+"/{ print $4; exit; }' package.json)
+fi
 
 kill() {
 	echo >&2 "$@"
@@ -84,17 +87,28 @@ dockerTagLatest() {
 }
 
 # assign base64 private key
-base64=$(cat $ssh_key | base64)
+base64="$(echo $ssh_key | base64)"
 
-usage() {
-	cat <<EOF
-usage: bash ./scripts/packndeploy -n service_name
--t    | --tag       (Required)            Image tag / version
--r 		| --repo			(Required)						Repository
--u		| --uri				(Required)						Repository URL
--n    | --name			(Required)						Image name
--h    | --help                            Brings up this menu
-EOF
+__usage="
+usage: ./aws-ecr.sh [options] [command]
+
+OPTIONS
+---------
+-t\t| --tag		Image tag / version
+-r\t| --repo	Repository
+-u\t| --uri		Repository URL
+-n\t| --name	Image name
+-h\t| --help	Brings up this menu
+
+COMMANDS
+---------
+release\t\tPush image to ecr service
+build\t\tBuild your docker image according to Dockerfile
+auth\t\tLogin Ecr services with already authenticated profile (ecr-user)
+"
+
+usage(){
+	echo "$__usage"
 }
 
 while [ "$1" != "" ]; do
@@ -125,6 +139,9 @@ while [ "$1" != "" ]; do
 	release)
 		command="release"
 		;;
+	auth)
+		command="auth"
+		;;
 	*)
 		usage
 		exit 1
@@ -133,12 +150,22 @@ while [ "$1" != "" ]; do
 	shift
 done
 
+if [ -z $command ]; then
+	usage
+	exit
+fi
+
 echo "TAG = " $tag
 echo "REPOSITORY = " $repository
 echo "URI = " $uri
 echo "NAME = " $name
 echo "KEY = " $ssh_key
 echo "COMMAND = " $command
+
+if [ "$command" = "auth" ]; then
+	awsLogin
+	exit
+fi
 
 if [ -z $repository ]; then
 	echo "Repo is required, provide it with the flag: -r <aws repository url>"
@@ -171,8 +198,4 @@ if [ "$command" = "release" ]; then
 	echo "${bold}>>> Pushing to awc ecr tag $tag${normal}"
 	awsLogin
 	pushToEcr
-fi
-
-if [ "$command" = "auth" ]; then
-	awsLogin
 fi
