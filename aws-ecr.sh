@@ -87,7 +87,7 @@ dockerTagLatest() {
 }
 
 # assign base64 private key
-base64="$(echo $ssh_key | base64)"
+base64="$(cat $ssh_key | base64)"
 
 __usage="
 usage: ./aws-ecr.sh [options] [command]
