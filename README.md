@@ -1,5 +1,9 @@
 # AWS-ECR.SH
 
+
+![version](https://img.shields.io/badge/0.1.3-version-brightgreen)
+
+
 This is utility script in order to push image to aws ecr service. 
 Aws Login use `get-authorization-token` method in order to authentication.
 
