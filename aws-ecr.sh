@@ -73,7 +73,7 @@ pushToEcr() {
 }
 
 dockerBuild() {
-	docker build --no-cache --build-arg SSH_KEY=$base64 -t $name .
+	docker build --build-arg SSH_KEY=$base64 -t $name .
 }
 
 dockerTag() {
