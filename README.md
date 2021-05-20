@@ -16,7 +16,7 @@ You can;
 1. Your aws iam user must be configured with aws cli with named profiles
 
 ```text
-aws configure --profile aws-ecr
+aws configure --profile ecr-user
 ```
 
 _You find out more details https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html_
