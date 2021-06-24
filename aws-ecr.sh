@@ -75,7 +75,7 @@ pushToEcr() {
 }
 
 dockerBuild() {
-	echo "dockerBuild, $name, $base64"
+	echo "dockerBuild time DOCKER_BUILDKIT=1 docker build --build-arg SSH_KEY=$base64 -t $name ."
 	time DOCKER_BUILDKIT=1 docker build --build-arg SSH_KEY=$base64 -t $name .
 }
 
