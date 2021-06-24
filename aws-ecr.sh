@@ -48,6 +48,7 @@ kill() {
 }
 
 awsLogin() {
+	echo "awsLogin"
 	tokenbase64=$(aws ecr get-authorization-token --profile ecr-user --output text --query 'authorizationData[].authorizationToken')
 
 	if [ -n $tokenbase64 ]; then
@@ -69,20 +70,22 @@ getEcrTags() {
 }
 
 pushToEcr() {
+	echo "pushToEcr, $repository, $tag"
 	docker push $repository:$tag
 }
 
 dockerBuild() {
+	echo "dockerBuild, $name, $base64"
 	time DOCKER_BUILDKIT=1 docker build --build-arg SSH_KEY=$base64 -t $name .
 }
 
 dockerTag() {
-	echo "create tag: $tag"
+	echo "dockerTag, $repository, $tag"
 	docker tag $name $repository:$tag
 }
 
 dockerTagLatest() {
-	echo "create tag: latest"
+	echo "dockerTagLatest, $repository, latest"
 	docker tag $name $repository:latest
 }
 
