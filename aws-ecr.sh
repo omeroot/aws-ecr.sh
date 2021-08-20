@@ -17,6 +17,7 @@ token=
 # URI=<url>
 # REPO=<repo>
 # APP_NAME=<app name>
+# PROFILE=<aws profile>
 # KEY=~/.ssh/<example_rsa>
 
 ENV=.env
@@ -28,6 +29,7 @@ fi
 repository=$REPO
 uri=$URI
 name=$APP_NAME
+profile=$PROFILE
 command=
 tag=
 
@@ -48,7 +50,7 @@ kill() {
 }
 
 awsLogin() {
-	tokenbase64=$(aws ecr get-authorization-token --profile ecr-user --output text --query 'authorizationData[].authorizationToken')
+	tokenbase64=$(aws ecr get-authorization-token --profile $profile --output text --query 'authorizationData[].authorizationToken')
 
 	if [ -n $tokenbase64 ]; then
 		credentials=$(echo $tokenbase64 | base64 --decode)
@@ -94,17 +96,18 @@ usage: ./aws-ecr.sh [options] [command]
 
 OPTIONS
 ---------
--t\t| --tag		Image tag / version
--r\t| --repo	Repository
--u\t| --uri		Repository URL
--n\t| --name	Image name
--h\t| --help	Brings up this menu
+-t\t| --tag			Image tag / version
+-r\t| --repo		Repository
+-u\t| --uri			Repository URL
+-p\t| --profile	AWS Profile
+-n\t| --name		Image name
+-h\t| --help		Brings up this menu
 
 COMMANDS
 ---------
 release\t\tPush image to ecr service
 build\t\tBuild your docker image according to Dockerfile
-auth\t\tLogin Ecr services with already authenticated profile (ecr-user)
+auth\t\tLogin Ecr services with already authenticated profile (ecr-user or ...)
 "
 
 usage(){
@@ -124,6 +127,10 @@ while [ "$1" != "" ]; do
 	-n | --name)
 		shift
 		name=$1
+		;;
+	-p | --profile)
+		shift
+		profile=$1
 		;;
 	-u | --uri)
 		shift
@@ -161,6 +168,7 @@ echo "URI = " $uri
 echo "NAME = " $name
 echo "KEY = " $ssh_key
 echo "COMMAND = " $command
+echo "PROFILE = " $profile
 
 if [ -z $uri ]; then
 	echo "Uri is required, provide it with the flag: -u <aws ecr url>"
@@ -185,6 +193,10 @@ fi
 if [ -z $command ]; then
 	echo "Command is missing: build | release"
 	exit
+fi
+
+if [-z $profile]; then
+	$profile = "ecr-user"
 fi
 
 if [ "$command" = "build" ]; then
