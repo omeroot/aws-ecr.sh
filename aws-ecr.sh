@@ -197,7 +197,7 @@ if [ -z $command ]; then
 	exit
 fi
 
-if [-z $profile]; then
+if [ -z $profile ]; then
 	$profile = "ecr-user"
 fi
 
