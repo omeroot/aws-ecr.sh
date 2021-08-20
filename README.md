@@ -16,7 +16,7 @@ You can;
 1. Your aws iam user must be configured with aws cli with named profiles
 
 ```text
-aws configure --profile ecr-user
+aws configure --profile <your aws profile name | default: aws-ecr>
 ```
 
 _You find out more details https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html_
@@ -39,6 +39,7 @@ If you want to pass options when running script, you could create .env file and 
 URI=<ecr uri>
 REPO=<image repository uri>
 APP_NAME=<image name>
+PROFILE=<aws profile name>
 SSH_KEY=~/.ssh/<your_key_rsa>
 ```
 > `SSH_KEY` is optional 
@@ -49,6 +50,7 @@ SSH_KEY=~/.ssh/<your_key_rsa>
 |--------------------	|---------------------------------------------------------------------------	|
 | -t \| --tag        	| Tag of your docker image (beta, latest, version x.x.x ...)                	|
 | -r \| --repository 	| Your aws image repository (You should push same image to same repository) 	|
+| -p \| --profile		 	| Your aws profile name for ecr																							 	|
 | -n \| --name       	| Image name                                                                	|
 | -u \| --uri        	| Aws ecr url created according to your aws account.                        	|
 
