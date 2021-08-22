@@ -196,7 +196,7 @@ if [ -z $command ]; then
 fi
 
 if [ -z $profile ]; then
-	$profile = "ecr-user"
+	profile = "ecr-user"
 fi
 
 if [ "$command" = "build" ]; then
